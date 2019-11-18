@@ -38,6 +38,13 @@ const displayControls = () => {
   }, 5000);
 };
 
+const setSavedTime = () => {
+  const savedTimeInfo = JSON.parse(localStorage.getItem('nextflix-video-player-playtime'));
+  if (savedTimeInfo.pauseTime && savedTimeInfo.filename === video.src) {
+    video.currentTime = savedTimeInfo.pauseTime;
+  }
+};
+
 const playPause = () => {
   if (video.paused) {
     video.play();
@@ -47,6 +54,10 @@ const playPause = () => {
     video.pause();
     playButton.style.display = '';
     pauseButton.style.display = 'none';
+    localStorage.setItem(
+      'nextflix-video-player-playtime',
+      JSON.stringify({filename: video.src, pauseTime: video.currentTime})
+    );
   }
 };
 
@@ -81,7 +92,7 @@ document.addEventListener('fullscreenchange', () => {
 
 document.addEventListener('keyup', (event) => {
   if (event.code === 'Space') {
-    playPause(); 
+    playPause();
   }
 
   if (event.code === 'KeyM') {
@@ -97,6 +108,10 @@ document.addEventListener('keyup', (event) => {
 
 document.addEventListener('mousemove', () => {
   displayControls();
+});
+
+video.addEventListener('loadedmetadata', () => {
+  setSavedTime();
 });
 
 video.addEventListener('timeupdate', () => {
